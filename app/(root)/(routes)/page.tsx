@@ -1,14 +1,6 @@
 "use client"
 import { useEffect } from 'react';
-
-import { Modal } from '@/components/ui/modal';
 import { useStoreModal } from '@/hooks/use-store-modal';
-import { 
-  SignInButton, 
-  SignOutButton, 
-  SignedOut, 
-  UserButton 
-} from '@clerk/nextjs';
 
  const SetupPage = () => {
   // import the useStoreModal hook 
@@ -21,11 +13,7 @@ import {
     }
   }, [isOpen, onOpen])
    
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        ROOT PAGE
-    </main>
-  );
+  return null;
 }
 
 export default SetupPage;

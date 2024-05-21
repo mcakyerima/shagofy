@@ -1,12 +1,18 @@
 "use client";
+
 import * as z from 'zod';
 import { useStoreModal } from "@/hooks/use-store-modal";
 import { Modal } from "@/components/ui/modal";
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import axios from 'axios';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../form';
 import { Input } from '../input';
 import { Button } from '../button';
+import { Loader2 } from "lucide-react";
+import { toast } from 'react-hot-toast';
 
 // define schema
 const formSchema = z.object({
@@ -14,6 +20,9 @@ const formSchema = z.object({
 });
 
 export const StoreModal = () => {
+    const [ loading , setLoading ] = useState(false);
+    
+    // use theuseStoreModal from zustand
     const storeModal = useStoreModal();
     const form = useForm<z.infer <typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -22,8 +31,15 @@ export const StoreModal = () => {
         }
     });
 const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    storeModal.onClose();
+    try {
+        setLoading(true);
+        const response = await axios.post('/api/stores', values);
+        toast.success('Store created!')
+    } catch (error) {
+        toast.error('Something went wrong!')
+    } finally {
+        setLoading(false)
+    }
 }
     return (
         <Modal
@@ -37,13 +53,16 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)}>
                             <FormField
-                                contron={form.control}
+                                control={form.control}
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Name</FormLabel>
                                         <FormControl>
-                                            <Input placeholder='E-commerce' {...field}/>
+                                            <Input 
+                                                disabled={form.formState.isSubmitting || loading} 
+                                                placeholder='E-commerce' 
+                                                {...field}/>
                                         </FormControl>
                                         <FormMessage/>
                                     </FormItem>
@@ -52,10 +71,22 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
                             <div className='pt-5 space-x-2 flex items-center justify-end w-full'>
                                 <Button 
                                     variant="outline" 
-                                    onClick={storeModal.onClose}>
+                                    onClick={storeModal.onClose}
+                                    disabled={form.formState.isSubmitting || loading}
+                                    >
                                         Cancel
                                 </Button>
-                                <Button type='submit'>Continue </Button>
+                                <Button 
+                                    type='submit'
+                                    disabled={form.formState.isSubmitting || loading}
+                                    >
+                                    {form.formState.isSubmitting
+                                    ?
+                                     <Loader2 className="mr-2 animate-spin"/>
+                                    : 
+                                    "Create"
+                                    }
+                                </Button>
                             </div>
                         </form>
                     </Form>

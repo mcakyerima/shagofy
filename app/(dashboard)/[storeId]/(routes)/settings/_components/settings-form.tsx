@@ -15,6 +15,7 @@ import { Loader2, TrashIcon } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import toast from "react-hot-toast";
 import { AlertModal } from "@/components/ui/modals/alert-modal";
+import { ApiAlert } from "@/components/api-alert";
 
 interface SettingsFormProps {
     initialData: Store;
@@ -133,6 +134,12 @@ const onDelete = async () => {
                     </Button>
                 </form>     
             </Form>
+            <Separator/>
+            <ApiAlert
+                title="NEXT_PUBLIC_API_URL"
+                description="test33542354324tsdfdsgsd43425"
+                variant="public"
+            />
         </>
      );
 }

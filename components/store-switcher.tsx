@@ -2,7 +2,6 @@
 import { Store } from "@prisma/client"
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { useStore } from "zustand";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandSeparator } from "@/components/ui/command";

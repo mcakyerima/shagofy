@@ -13,6 +13,8 @@ export default async function SetupLayout({
         redirect("/sign-in");
     }
 
+  
+
     // get the store for user, if n store, redirect user to store creation modal
     const store = await prismadb.store.findFirst({
         where: {

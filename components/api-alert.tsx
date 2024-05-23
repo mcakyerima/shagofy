@@ -1,3 +1,5 @@
+"use client";
+
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

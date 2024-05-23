@@ -1,5 +1,6 @@
 "use client";
-import { Store } from "@prisma/client";
+
+import { Billboard } from "@prisma/client";
 import * as z from "zod";
 import React, {useState} from "react";
 import { useForm } from "react-hook-form";
@@ -18,18 +19,18 @@ import { AlertModal } from "@/components/ui/modals/alert-modal";
 import { ApiAlert } from "@/components/api-alert";
 import { useOrigin } from "@/hooks/use-origin";
 
-interface SettingsFormProps {
-    initialData: Store;
-}
-
-
 const formSchema = z.object({
-    name: z.string().min(1)
+    label: z.string().min(1),
+    imageUrl: z.string().min(1)
 });
 
-type SettingsFormValues = z.infer<typeof formSchema>; 
+interface BillboardFormProps {
+    initialData: Billboard | null;
+}
 
-const SettingsForm: React.FC<SettingsFormProps> = ({
+type BillboardFormValues = z.infer<typeof formSchema>; 
+
+const BillboardForm: React.FC<BillboardFormProps> = ({
     initialData
 }) => {
 // get the store id in params
@@ -41,12 +42,20 @@ const [loading, setLoading] = useState(false);
 // get the useOrigin windo custom hook
 const origin: string = useOrigin();
 
-const form = useForm<SettingsFormValues>({
+const form = useForm<BillboardFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData
-})  
+    defaultValues: initialData || {
+        label: '',
+        imageUrl: '',
+    }
+});
 
-const onSubmit = async (data: SettingsFormValues) => {
+const title = initialData ? "Edit billboard." : "Create billboard";
+const description = initialData ? "Edit a billboard." : "Add a new billboard";
+const toastMessage = initialData ? "Billboard updated." : "Billboard created";
+const action = initialData ? "Save changes" : "Create";
+
+const onSubmit = async (data: BillboardFormValues) => {
     try {
         setLoading(true);
         // use axios
@@ -88,8 +97,8 @@ const onDelete = async () => {
             />
             <div className="flex items-center justify-between">
                 <Heading
-                    title="Settings"
-                    description="Update your store settings"
+                    title={title}
+                    description={description}
                 />
                 <Button
                     disabled={loading}
@@ -101,13 +110,13 @@ const onDelete = async () => {
                     <span className="hidden sm:block">Delete Store</span>
                 </Button>
             </div>
-            <Separator/>
+            <Separator className="my-3"/>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
                     <div className="grid grid-cols-3 gap-8">
                         <FormField
                             control={form.control}
-                            name="name"
+                            name="label"
                             render={({field}) => (
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
@@ -137,7 +146,7 @@ const onDelete = async () => {
                     </Button>
                 </form>     
             </Form>
-            <Separator/>
+            <Separator className="my-4"/>
             <ApiAlert
                 title="NEXT_PUBLIC_API_URL"
                 description={`${origin}/api/${storeId}`}
@@ -147,4 +156,4 @@ const onDelete = async () => {
      );
 }
  
-export default SettingsForm;
+export default BillboardForm;

@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 import { AlertModal } from "@/components/ui/modals/alert-modal";
 import { ApiAlert } from "@/components/api-alert";
 import { useOrigin } from "@/hooks/use-origin";
+import ImageUpload from "@/components/ui/image-upload";
 
 const formSchema = z.object({
     label: z.string().min(1),
@@ -33,15 +34,19 @@ type BillboardFormValues = z.infer<typeof formSchema>;
 const BillboardForm: React.FC<BillboardFormProps> = ({
     initialData
 }) => {
+
 // get the store id in params
-const { storeId } = useParams();
+const { storeId, billboardId } = useParams();
 const router = useRouter();
 
+// state for the modal
 const [open, setOpen] = useState(false);
 const [loading, setLoading] = useState(false);
+
 // get the useOrigin windo custom hook
 const origin: string = useOrigin();
 
+// form hook
 const form = useForm<BillboardFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -50,20 +55,26 @@ const form = useForm<BillboardFormValues>({
     }
 });
 
+// Mapping the initial data to the form values
 const title = initialData ? "Edit billboard." : "Create billboard";
 const description = initialData ? "Edit a billboard." : "Add a new billboard";
 const toastMessage = initialData ? "Billboard updated." : "Billboard created";
 const action = initialData ? "Save changes" : "Create";
 
+// onSubmit function for submitting the form
 const onSubmit = async (data: BillboardFormValues) => {
     try {
         setLoading(true);
-        // use axios
-        const response = await axios.patch(`/api/stores/${storeId}`, data);
+        if (initialData) {
+            await axios.patch(`/api/${storeId}/billboards/${billboardId}`, data);
+        } else {
+            await axios.post(`/api/${storeId}/billboards`, data);
+        }
+        
         // refresh the page to update server component
         router.refresh()
 
-        toast.success("Store settings updated")
+        toast.success(toastMessage)
 
     } catch (error) {
         toast.error("Something went wrong")
@@ -76,12 +87,12 @@ const onSubmit = async (data: BillboardFormValues) => {
 const onDelete = async () => {
     try {
         setLoading(true);
-        await axios.delete(`/api/stores/${storeId}`);
+        await axios.delete(`/api/${storeId}/billboards/${billboardId}`);
         router.refresh();
         router.push("/");
-        toast.success("Store deleted")
+        toast.success("Billboard deleted")
     } catch (error) {
-        toast.error("Make sure you removed all products and orders before deleting the store")
+        toast.error("Make sure you removed all the categories from this billboard before deleting it.")
     }finally {
         setLoading(false);
         setOpen(false);
@@ -100,31 +111,54 @@ const onDelete = async () => {
                     title={title}
                     description={description}
                 />
-                <Button
-                    disabled={loading}
-                    variant="destructive"
-                    onClick={() => setOpen(true)}
-                    className="flex items-center sm:gap-1"
-                >
-                    <TrashIcon className="h-4 w-4"/>
-                    <span className="hidden sm:block">Delete Store</span>
-                </Button>
+                {
+                    initialData && (
+                        <Button
+                            disabled={loading}
+                            variant="destructive"
+                            onClick={() => setOpen(true)}
+                            className="flex items-center sm:gap-1"
+                        >
+                            <TrashIcon className="h-4 w-4"/>
+                            <span className="hidden sm:block">Delete Billboard</span>
+                        </Button>
+                    )
+                }
+                
             </div>
             <Separator className="my-3"/>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+                    <FormField
+                        control={form.control}
+                        name="imageUrl"
+                        render={({field}) => (
+                            <FormItem>
+                                <FormLabel>Background Image</FormLabel>
+                                <FormControl>
+                                    <ImageUpload
+                                        value={field.value ? [field.value] : []}
+                                        disabled={loading}
+                                        onChange={(url) =>field.onChange(url)}
+                                        onRemove={() => field.onChange("")}
+                                    />
+                                </FormControl>
+                                <FormMessage/>
+                            </FormItem>
+                        )}
+                    />
                     <div className="grid grid-cols-3 gap-8">
                         <FormField
                             control={form.control}
                             name="label"
                             render={({field}) => (
                                 <FormItem>
-                                    <FormLabel>Name</FormLabel>
+                                    <FormLabel>Label</FormLabel>
                                     <FormControl>
                                         <Input 
                                             disabled={form.formState.isSubmitting || loading} 
                                             {...field} 
-                                            placeholder="Store Name"
+                                            placeholder="Billboard label"
                                         />
                                     </FormControl>
                                     <FormMessage/>
@@ -141,17 +175,12 @@ const onDelete = async () => {
                         ?
                             <Loader2 className="mr-2 animate-spin"/>
                         : 
-                        "Update Settings"
+                        action
                         }
                     </Button>
                 </form>     
             </Form>
             <Separator className="my-4"/>
-            <ApiAlert
-                title="NEXT_PUBLIC_API_URL"
-                description={`${origin}/api/${storeId}`}
-                variant="public"
-            />
         </>
      );
 }

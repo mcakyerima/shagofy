@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface AlertModalProps {
+    item: string;
     isOpen: boolean;
     loading: boolean;
     onClose: () => void;
@@ -14,6 +15,7 @@ interface AlertModalProps {
 }
 
 export const AlertModal: React.FC<AlertModalProps> = ({
+    item,
     isOpen,
     loading,
     onClose,
@@ -32,7 +34,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
 
     return (
          <Modal
-            title="Are you sure you want to delete this store?"
+            title={`Are you sure you want to delete this ${item}?`}
             description="This action cannot be undone."
             isOpen={isOpen}
             onClose={onClose}

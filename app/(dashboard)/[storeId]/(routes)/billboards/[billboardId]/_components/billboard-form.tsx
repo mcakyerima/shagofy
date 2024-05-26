@@ -90,7 +90,7 @@ const onDelete = async () => {
         setLoading(true);
         await axios.delete(`/api/${storeId}/billboards/${billboardId}`);
         router.refresh();
-        router.push("/");
+        router.push(`/${storeId}/billboards`);
         toast.success("Billboard deleted")
     } catch (error) {
         toast.error("Make sure you removed all the categories from this billboard before deleting it.")
@@ -102,6 +102,7 @@ const onDelete = async () => {
     return ( 
         <>
             <AlertModal
+                item="Billboard"
                 isOpen={open}
                 onClose={() => setOpen(false)}
                 onConfirm={onDelete}
@@ -180,7 +181,6 @@ const onDelete = async () => {
                     </Button>
                 </form>     
             </Form>
-            <Separator className="my-4"/>
         </>
      );
 }

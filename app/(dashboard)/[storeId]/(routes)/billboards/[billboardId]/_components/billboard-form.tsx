@@ -16,7 +16,6 @@ import { Loader2, TrashIcon } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import toast from "react-hot-toast";
 import { AlertModal } from "@/components/ui/modals/alert-modal";
-import { ApiAlert } from "@/components/api-alert";
 import { useOrigin } from "@/hooks/use-origin";
 import ImageUpload from "@/components/ui/image-upload";
 
@@ -34,6 +33,7 @@ type BillboardFormValues = z.infer<typeof formSchema>;
 const BillboardForm: React.FC<BillboardFormProps> = ({
     initialData
 }) => {
+    console.log(['INITIAL_DATA: ', initialData]);
 
 // get the store id in params
 const { storeId, billboardId } = useParams();
@@ -55,6 +55,7 @@ const form = useForm<BillboardFormValues>({
     }
 });
 
+
 // Mapping the initial data to the form values
 const title = initialData ? "Edit billboard." : "Create billboard";
 const description = initialData ? "Edit a billboard." : "Add a new billboard";
@@ -73,7 +74,7 @@ const onSubmit = async (data: BillboardFormValues) => {
         
         // refresh the page to update server component
         router.refresh()
-
+        router.push(`/${storeId}/billboards`);
         toast.success(toastMessage)
 
     } catch (error) {
@@ -123,8 +124,7 @@ const onDelete = async () => {
                             <span className="hidden sm:block">Delete Billboard</span>
                         </Button>
                     )
-                }
-                
+                }           
             </div>
             <Separator className="my-3"/>
             <Form {...form}>
@@ -139,7 +139,7 @@ const onDelete = async () => {
                                     <ImageUpload
                                         value={field.value ? [field.value] : []}
                                         disabled={loading}
-                                        onChange={(url) =>field.onChange(url)}
+                                        onChange={(url) => field.onChange(url)}
                                         onRemove={() => field.onChange("")}
                                     />
                                 </FormControl>

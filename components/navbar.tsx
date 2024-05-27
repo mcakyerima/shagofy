@@ -19,8 +19,8 @@ const Navbar = async () => {
     })
     return (
         // responsive navbar with tailwind
-        <div className="border-b">
-            <div className="container flex items-center py-4">
+        <div className="border-b sticky top-0 z-20 backdrop-filter backdrop-blur-lg bg-opacity-80">
+            <div className=" sticky top-0 container flex items-center py-4">
                 <StoreSwitcher items={stores}/>
                 <MainNav className="mx-6"/>
                 <div className="ml-auto flex items-center space-x-4">

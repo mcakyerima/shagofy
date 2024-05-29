@@ -24,6 +24,7 @@ model Store {
   sizes Size[] @relation("StoreToSize")
   colors Color[] @relation("StoreToColor")
   products Product[] @relation("StoreToProduct")
+  orders Order[] @relation("StoreToOrder")
   address   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -101,6 +102,7 @@ model Product {
   colorId String
   color Color @relation(fields: [colorId], references: [id])
   images Image[]
+  orderItems OrderItem[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -111,12 +113,40 @@ model Product {
 }
 
 model Image {
-  id String @id @default(uuid())
-  url String
+  id        String @id @default(uuid())
+  url       String
   productId String
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([productId])
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  storeId   String
+  store     Store       @relation("StoreToOrder", fields: [storeId], references: [id])
+  orderItems OrderItem[]
+  isPaid    Boolean     @default(false)
+  phone     String      @default("")
+  address   String      @default("")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([storeId])
+}
+
+model OrderItem {
+  id          String    @id @default(uuid())
+  orderId     String
+  order       Order     @relation(fields: [orderId], references: [id])
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+  isFree      Boolean?  @default(false) // Optional field to indicate if the item is free
+  discount    Float?    // Optional field to store discount value (percentage or amount)
+  couponCode  String?   // Optional field to store a coupon code
+
+  @@index([orderId])
   @@index([productId])
 }

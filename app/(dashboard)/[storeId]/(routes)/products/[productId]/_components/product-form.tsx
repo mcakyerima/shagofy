@@ -26,8 +26,7 @@ import toast from "react-hot-toast";
 import { AlertModal } from "@/components/ui/modals/alert-modal";
 import { useOrigin } from "@/hooks/use-origin";
 import ImageUpload, { ImageObject } from "@/components/ui/image-upload";
-import { Select } from "@radix-ui/react-select";
-import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
@@ -73,6 +72,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   // get the useOrigin windo custom hook
   const origin: string = useOrigin();
 
+  console.log({InitialData: initialData});
   // form hook
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
@@ -103,16 +103,16 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const onSubmit = async (data: ProductFormValues) => {
     try {
       setLoading(true);
-      // if (initialData) {
-      //   await axios.patch(`/api/${storeId}/products/${productId}`, data);
-      // } else {
-      //   await axios.post(`/api/${storeId}/products`, data);
-      // }
+      if (initialData) {
+        await axios.patch(`/api/${storeId}/products/${productId}`, data);
+      } else {
+        await axios.post(`/api/${storeId}/products`, data);
+      }
 
-      // // refresh the page to update server component
-      // router.refresh();
-      // router.push(`/${storeId}/products`);
-      // toast.success(toastMessage);
+      // refresh the page to update server component
+      router.refresh();
+      router.push(`/${storeId}/products`);
+      toast.success(toastMessage);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
@@ -127,10 +127,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
       await axios.delete(`/api/${storeId}/products/${productId}`);
       router.refresh();
       router.push(`/${storeId}/products`);
-      toast.success("Billboard deleted");
+      toast.success("Product deleted");
     } catch (error) {
       toast.error(
-        "Make sure you removed all the categories from this billboard before deleting it."
+        "There was an error deleting the product. Please try again."
       );
     } finally {
       setLoading(false);
@@ -167,30 +167,31 @@ const ProductForm: React.FC<ProductFormProps> = ({
           className="space-y-8 w-full"
         >
          <FormField
-          control={form.control}
-          name="images"
-          render={({ field }) => (
-              <FormItem>
-                    <FormLabel>Images</FormLabel>
-                    <FormControl>
-                        <ImageUpload
-                            disabled={loading}
-                            onChange={(newImages: ImageObject[]) => {
-                                // Update form value with new images
-                                field.onChange(newImages);
-                            }}
-                            onRemove={(url: string) => {
-                                // Filter out the removed image
-                                const updatedImages = field.value.filter((image: ImageObject) => image.url !== url);
-                                // Update form value with remaining images
-                                field.onChange(updatedImages);
-                            }}
-                        />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                  )}
-              />
+                    control={form.control}
+                    name="images"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Images</FormLabel>
+                            <FormControl>
+                                <ImageUpload
+                                    disabled={loading}
+                                    onChange={(newImages: ImageObject[]) => {
+                                        // Update form value with new images
+                                        field.onChange(newImages);
+                                    }}
+                                    onRemove={(url: string) => {
+                                        // Filter out the removed image
+                                        const updatedImages = field.value.filter((image: ImageObject) => image.url !== url);
+                                        // Update form value with remaining images
+                                        field.onChange(updatedImages);
+                                    }}
+                                    initialImages={initialData ? initialData.images: undefined}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
           <div className="grid grid-cols-3 gap-8">
             <FormField
               control={form.control}
@@ -395,4 +396,4 @@ const ProductForm: React.FC<ProductFormProps> = ({
   );
 };
 
-export default ProductForm;
+export default ProductForm; 

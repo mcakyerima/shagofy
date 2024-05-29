@@ -12,12 +12,14 @@ interface ImageUploadProps {
     disabled?: boolean;
     onChange: (newImages: ImageObject[]) => void;
     onRemove: (url: string) => void;
+    initialImages?: ImageObject[];
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
     disabled,
     onChange,
     onRemove,
+    initialImages
 }) => {
     const [images, setImages] = useState<ImageObject[]>([]);
     const [isMounted, setIsMounted] = useState(false);
@@ -26,6 +28,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         setIsMounted(true);
     }, []);
 
+    useEffect(() => {
+        if (initialImages) {
+            setImages(initialImages);
+        }
+    },[initialImages])
+
+
     // This is used to get the image url from the cloudinary widget
     const onUpload = (result: any) => {
         // Append the new URL to the existing array of URLs
@@ -33,7 +42,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         const newImage = { url: newUrl };
 
         // Update the local state with the new image
-        setImages(prevImages => [...prevImages, newImage]);
+        setImages(prevImages => {
+            const updatedImages = [...prevImages, newImage];
+            onChange(updatedImages); // Update the form field value
+            return updatedImages;
+        });
     };
 
     // Function to handle image removal
@@ -46,6 +59,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
         // Call the onRemove callback to inform the parent component
         onRemove(url);
+        onChange(updatedImages); // Update the form field value
     };
 
     if (!isMounted) {

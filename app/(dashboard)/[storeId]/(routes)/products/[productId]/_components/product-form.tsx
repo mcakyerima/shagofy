@@ -110,8 +110,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
       }
 
       // refresh the page to update server component
-      router.refresh();
       router.push(`/${storeId}/products`);
+      router.refresh();
       toast.success(toastMessage);
     } catch (error) {
       toast.error("Something went wrong");
@@ -125,8 +125,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
     try {
       setLoading(true);
       await axios.delete(`/api/${storeId}/products/${productId}`);
-      router.refresh();
       router.push(`/${storeId}/products`);
+      router.refresh();
       toast.success("Product deleted");
     } catch (error) {
       toast.error(

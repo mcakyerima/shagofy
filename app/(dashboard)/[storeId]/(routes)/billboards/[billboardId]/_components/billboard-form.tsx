@@ -24,7 +24,7 @@ import {
 import toast from "react-hot-toast";
 import { AlertModal } from "@/components/ui/modals/alert-modal";
 import { useOrigin } from "@/hooks/use-origin";
-import ImageUpload from "@/components/ui/ImageUpload";
+import BillboardUpload from "@/components/ui/billboard-upload";
 
 const formSchema = z.object({
   label: z.string().min(1),
@@ -140,7 +140,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
               <FormItem>
                 <FormLabel>Background Image</FormLabel>
                 <FormControl>
-                  <ImageUpload
+                  <BillboardUpload
                     value={field.value ? [field.value] : []}
                     disabled={loading}
                     onChange={(url) => field.onChange(url)}

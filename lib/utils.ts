@@ -20,3 +20,5 @@ export function formatPrice(price: number, currency: string = "USD") {
   return formatter.format(price);
 }
 
+//https://intranet.alxswe.com/corrections/33625383/correct
+//thormiwa04@gmail.com

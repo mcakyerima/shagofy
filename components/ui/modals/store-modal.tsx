@@ -22,7 +22,7 @@ const formSchema = z.object({
 export const StoreModal = () => {
     const [ loading , setLoading ] = useState(false);
     
-    // use theuseStoreModal from zustand
+    // use the useStoreModal from zustand
     const storeModal = useStoreModal();
     const form = useForm<z.infer <typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -30,6 +30,7 @@ export const StoreModal = () => {
             name:""
         }
     });
+    
 const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
         setLoading(true);
@@ -92,7 +93,7 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
                             </div>
                         </form>
                     </Form>
-                </div>
+                </div>sign
             </div>
         </Modal>
     );
